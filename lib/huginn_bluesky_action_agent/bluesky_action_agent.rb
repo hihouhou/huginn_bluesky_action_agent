@@ -19,8 +19,6 @@ module Agents
 
       `cid` is mandatory to interact with the wanted feed.
 
-      `author_did` is the author of the feed.
-
       `handle` is mandatory for authentication.
 
       `app_password` is mandatory for authentication.
@@ -42,7 +40,6 @@ module Agents
       {
         'uri' => "{{ post.uri }}",
         'cid' => "{{ post.cid }}",
-        'author_did' => "{{ post.author.did }}",
         'debug' => 'false',
         'repost' => 'false',
         'like' => 'true',
@@ -55,7 +52,6 @@ module Agents
 
     form_configurable :uri, type: :string
     form_configurable :cid, type: :string
-    form_configurable :author_did, type: :string
     form_configurable :debug, type: :boolean
     form_configurable :repost, type: :boolean
     form_configurable :like, type: :boolean
@@ -70,10 +66,6 @@ module Agents
 
       unless options['cid'].present?
         errors.add(:base, "cid is a required field")
-      end
-
-      unless options['author_did'].present?
-        errors.add(:base, "author_did is a required field")
       end
 
       unless options['app_password'].present?
@@ -177,7 +169,7 @@ module Agents
       request["Authorization"] = "Bearer #{generate_api_key(did)}"
       request.body = JSON.dump({
         "collection" => "app.bsky.feed.repost",
-        "repo" => interpolated['author_did'],
+        "repo" => did,
         "record" => {
           "subject" => {
             "uri" => interpolated['uri'],
@@ -213,7 +205,7 @@ module Agents
       request["Authorization"] = "Bearer #{generate_api_key(did)}"
       request.body = JSON.dump({
         "collection" => "app.bsky.feed.like",
-        "repo" => interpolated['author_did'],
+        "repo" => did,
         "record" => {
           "subject" => {
             "uri" => interpolated['uri'],
